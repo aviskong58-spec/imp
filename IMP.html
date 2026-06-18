@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>餐饮综合管理平台</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f2f5; min-height: 100vh; }
+        
+        /* 登录界面样式 */
+        #login-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex; align-items: center; justify-content: center; z-index: 9999;
+        }
+        .login-box {
+            background: white; padding: 40px; border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3); width: 380px; text-align: center;
+        }
+        .login-box h2 { margin-bottom: 8px; color: #333; }
+        .login-box p { color: #888; margin-bottom: 24px; font-size: 14px; }
+        .login-box input {
+            width: 100%; padding: 14px 16px; border: 2px solid #e0e0e0;
+            border-radius: 10px; font-size: 16px; margin-bottom: 16px; outline: none;
+            transition: border-color 0.3s;
+        }
+        .login-box input:focus { border-color: #667eea; }
+        .login-box button {
+            width: 100%; padding: 14px; background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white; border: none; border-radius: 10px; font-size: 16px;
+            cursor: pointer; transition: opacity 0.3s;
+        }
+        .login-box button:hover { opacity: 0.9; }
+        .error-msg { color: #e74c3c; font-size: 13px; margin-top: 10px; display: none; }
+
+        /* 主面板样式 */
+        #dashboard { display: none; max-width: 1000px; margin: 0 auto; padding: 30px 20px; }
+        .header { text-align: center; margin-bottom: 36px; }
+        .header h1 { font-size: 28px; color: #333; margin-bottom: 6px; }
+        .header p { color: #888; font-size: 15px; }
+        .logout-btn {
+            position: fixed; top: 20px; right: 20px; padding: 8px 18px;
+            background: #e74c3c; color: white; border: none; border-radius: 8px;
+            cursor: pointer; font-size: 13px; z-index: 100;
+        }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .card {
+            background: white; border-radius: 16px; padding: 28px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06); transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer; text-decoration: none; color: inherit; display: block;
+        }
+        .card:hover { transform: translateY(-4px); box-shadow: 0 8px 30px rgba(0,0,0,0.12); }
+        .card-icon { font-size: 40px; margin-bottom: 14px; }
+        .card h3 { font-size: 18px; margin-bottom: 8px; color: #333; }
+        .card p { font-size: 13px; color: #888; line-height: 1.6; }
+        .card-tag {
+            display: inline-block; margin-top: 12px; padding: 4px 10px;
+            background: #f0f2f5; border-radius: 20px; font-size: 11px; color: #666;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 🔐 密码登录层 -->
+<div id="login-overlay">
+    <div class="login-box">
+        <h2>🔒 餐饮管理平台</h2>
+        <p>请输入密码以访问所有系统</p>
+        <input type="password" id="password-input" placeholder="请输入访问密码" onkeydown="if(event.key==='Enter') doLogin()">
+        <button onclick="doLogin()">登 录</button>
+        <div class="error-msg" id="error-msg">❌ 密码错误，请重试</div>
+    </div>
+</div>
+
+<!-- 📊 主仪表板 -->
+<div id="dashboard">
+    <button class="logout-btn" onclick="doLogout()">🚪 退出登录</button>
+    <div class="header">
+        <h1>🍜 餐饮综合管理平台</h1>
+        <p>一站式集成 · 5大核心业务系统</p>
+    </div>
+    <div class="grid">
+        <a class="card" href="https://aviskong58-spec.github.io/hawker-voice-accounting/" target="_blank">
+            <div class="card-icon">💰</div>
+            <h3>小贩快速记账</h3>
+            <p>支持现金与TnG电子钱包的快速收支记录、日结汇总与账目清空</p>
+            <span class="card-tag">记账 · 结算</span>
+        </a>
+        <a class="card" href="https://restaurant-analyst--onepzauto.replit.app/" target="_blank">
+            <div class="card-icon">📊</div>
+            <h3>客家餐饮经营分析</h3>
+            <p>餐厅经营数据可视化分析后台，辅助运营决策与业绩追踪</p>
+            <span class="card-tag">数据分析</span>
+        </a>
+        <a class="card" href="https://gilded-smakager-474009.netlify.app/cashier/" target="_blank">
+            <div class="card-icon">🧾</div>
+            <h3>前台收银接单系统</h3>
+            <p>订单录入、收款状态管理、待收/已收分类及厨房单据打印</p>
+            <span class="card-tag">收银 · 接单</span>
+        </a>
+        <a class="card" href="https://gilded-smakager-474009.netlify.app/menu/" target="_blank">
+            <div class="card-icon">🥢</div>
+            <h3>扫码点餐菜单</h3>
+            <p>酿豆腐与猪肠粉在线点餐，支持桌号选择、汤底/炸料搭配及超值套餐</p>
+            <span class="card-tag">点餐 · 菜单</span>
+        </a>
+        <a class="card" href="https://multi-lingual-notes--aceruser1983.replit.app/dashboard" target="_blank">
+            <div class="card-icon">📋</div>
+            <h3>OpsCheck 运营管理</h3>
+            <p>员工排班与卫生检查管理系统，支持中文/英文/马来文多语言切换</p>
+            <span class="card-tag">排班 · 卫生检查</span>
+        </a>
+    </div>
+</div>
+
+<script>
+    // ⚙️ 在此处修改您的访问密码
+    const CORRECT_PASSWORD = "admin123";
+
+    function doLogin() {
+        const input = document.getElementById('password-input');
+        const errorMsg = document.getElementById('error-msg');
+        if (input.value === CORRECT_PASSWORD) {
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            sessionStorage.setItem('authenticated', 'true');
+            errorMsg.style.display = 'none';
+        } else {
+            errorMsg.style.display = 'block';
+            input.value = '';
+            input.focus();
+        }
+    }
+
+    function doLogout() {
+        sessionStorage.removeItem('authenticated');
+        location.reload();
+    }
+
+    // 会话保持：同一浏览器标签页内刷新无需重新登录
+    if (sessionStorage.getItem('authenticated') === 'true') {
+        document.getElementById('login-overlay').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+    }
+</script>
+</body>
+</html>
